@@ -1,0 +1,19 @@
+@import "open-props/postcss/style";
+
+:root {
+  /* colors */
+  --col-primary: #284967;
+  --col-secondary: var(--yellow-6);
+  --col-warn: var(--orange-3);
+  --col-error: var(--red-9);
+  --col-b-1: var(--gray-6);
+  --col-b-2: var(--gray-7);
+  --col-b-3: var(--gray-8);
+  --col-b-4: var(--gray-9);
+  --col-b-5: var(--gray-10);
+  --col-w-1: var(--stone-4);
+  --col-w-2: var(--stone-3);
+  --col-w-3: var(--stone-2);
+  --col-w-4: var(--stone-1);
+  --col-w-5: var(--stone-0);
+}

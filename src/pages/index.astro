@@ -1,16 +1,114 @@
 ---
-
+import "@/styles/global.css";
+import Favicon from "public/favicon.svg";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Resume</title>
+  </head>
+  <body>
+    <header>
+      <div class="site-icon">
+        <Favicon />
+      </div>
+      <div class="head-left">Links</div>
+      <div class="head-right">Buttons</div>
+    </header>
+    <main>Content</main>
+  </body>
 </html>
+
+<style>
+  html,
+  body {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: var(--font-system-ui);
+    font-size: var(--font-size-fluid-0);
+  }
+
+  body {
+    background: no-repeat var(--gradient-8);
+  }
+
+  header {
+    height: 2rem;
+    background-color: var(--col-w-4);
+    box-shadow: var(--shadow-3);
+
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 999;
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .site-icon {
+    height: 1.2rem;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .site-icon > svg {
+    height: 100%;
+  }
+
+  .head-right {
+    margin-left: auto;
+    height: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  main {
+    margin: 10px auto;
+    padding: 2rem;
+    width: 60%;
+    max-width: 1280px;
+    background-color: var(--col-w-5);
+    border-radius: var(--radius-1);
+  }
+
+  @media (max-width: 960px) {
+    html,
+    body {
+      min-width: 600px;
+    }
+
+    main {
+      margin: 0;
+      width: unset;
+      border-radius: unset;
+    }
+  }
+
+  @media print {
+    body {
+      background: unset;
+    }
+
+    header {
+      display: none;
+    }
+
+    main {
+      margin: 0;
+      padding: 2rem;
+      background: unset;
+    }
+  }
+</style>
