@@ -1,0 +1,47 @@
+---
+import ImportIcon from "@/assets/import.svg";
+---
+
+<div class="resume-import" title="导入">
+  <ImportIcon />
+</div>
+
+<style>
+  .resume-import {
+    height: var(--size-4);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .resume-import:hover {
+    opacity: 0.66;
+  }
+
+  .resume-import > svg {
+    height: 100%;
+    width: 100%;
+  }
+</style>
+
+<script>
+  import { notify } from "@/libs/notification";
+  import { resumeStore } from "@/libs/resumeStore";
+
+  document.querySelector(".resume-import")?.addEventListener("click", () => {
+    const json = prompt("输入 JSON 数据");
+    if (json === null) return;
+    if (json.trim().length === 0) alert("请输入 JSON 数据");
+    try {
+      const jsonData = JSON.parse(json);
+
+      console.log(jsonData);
+      resumeStore.getState().importResume(jsonData);
+    } catch (e) {
+      console.error(e);
+      notify({
+        type: "error",
+        text: (e as Error).message,
+      });
+    }
+  });
+</script>

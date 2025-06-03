@@ -2,6 +2,7 @@
 import "@/styles/global.css";
 import Favicon from "public/favicon.svg";
 import PrintButton from "@/components/astro/PrintButton.astro";
+import ImportButton from "@/components/astro/ImportButton.astro";
 ---
 
 <!doctype html>
@@ -20,6 +21,7 @@ import PrintButton from "@/components/astro/PrintButton.astro";
       </div>
       <div class="head-left">Links</div>
       <div class="head-right">
+        <ImportButton />
         <PrintButton />
       </div>
     </header>
