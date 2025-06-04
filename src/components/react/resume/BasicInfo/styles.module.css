@@ -1,0 +1,16 @@
+.basicInfo {
+  min-height: 5rem;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2rem;
+}
+
+.item {
+  min-width: 32%;
+  margin: 5px 0;
+}
+
+.input {
+  width: calc(100% - 7rem);
+}

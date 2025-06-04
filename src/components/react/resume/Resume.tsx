@@ -1,3 +1,4 @@
+import BasicInfo from "./BasicInfo";
 import { resumeStore } from "@/libs/resumeStore";
 import { StrictMode, useEffect, useState } from "react";
 
@@ -27,7 +28,11 @@ function Resume() {
     return <ResumeNotFound message={`没有名称为：'${name} 的简历'`} />;
   }
 
-  return <>Resume</>;
+  return (
+    <>
+      <BasicInfo data={resume.basic} />
+    </>
+  );
 }
 
 export default function ResumeStrictMode() {
