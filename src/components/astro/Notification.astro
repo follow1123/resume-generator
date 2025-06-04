@@ -1,0 +1,126 @@
+---
+
+---
+
+<resume-notification>
+  <div class="message hidden"></div>
+  <div class="message hidden"></div>
+  <div class="message hidden"></div>
+  <div class="message hidden"></div>
+  <div class="message hidden"></div>
+</resume-notification>
+
+<style>
+  resume-notification {
+    --msg-padding: var(--size-3);
+    --font-weight: var(--font-weight-7);
+    --bg: var(--col-w-5);
+    position: fixed;
+    width: 20%;
+    bottom: 0;
+    right: calc(var(--msg-padding) * 2.5);
+    z-index: 999;
+  }
+
+  .message {
+    width: 100%;
+    background-color: var(--bg);
+    border-radius: var(--radius-2);
+    box-shadow: var(--shadow-5);
+    margin-bottom: 1rem;
+    padding: var(--msg-padding);
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .level-warn {
+    background-color: var(--col-warn);
+    font-weight: var(--font-weight);
+  }
+
+  .level-error {
+    background-color: var(--col-error);
+    font-weight: var(--font-weight);
+    color: var(--bg);
+  }
+
+  .show {
+    display: block;
+  }
+</style>
+
+<script>
+  import { subscribe } from "@/libs/notification";
+  import type { Message } from "@/libs/notification";
+
+  class ResumeNotification extends HTMLElement {
+    #duration = 5000;
+    #messageIdx = 0;
+    #usedBox: Map<HTMLDivElement, number>;
+
+    #unsub: () => void;
+
+    constructor() {
+      super();
+      this.#unsub = subscribe(this.#show.bind(this));
+      this.#usedBox = new Map();
+    }
+
+    disconnectedCallback() {
+      this.#unsub();
+      this.#usedBox.forEach((v) => {
+        clearTimeout(v);
+      });
+    }
+
+    #show(message: Message) {
+      //console.log("handle message, message index: ", this.#messageIdx);
+      if (this.#messageIdx === 5) {
+        const item = this.firstElementChild as HTMLDivElement;
+        this.appendChild(item);
+        this.#renderMessage(item, message);
+        return;
+      }
+
+      const item = this.children.item(this.#messageIdx) as HTMLDivElement;
+      this.#renderMessage(item, message);
+      this.#messageIdx++;
+    }
+
+    #renderMessage(e: HTMLDivElement, message: Message) {
+      if (this.#usedBox.has(e)) {
+        clearTimeout(this.#usedBox.get(e));
+      }
+      this.#showElement(e);
+      this.#setLevel(e, message.level);
+      e.innerText = message.message;
+
+      const timeoutId = setTimeout(() => {
+        this.#hideElement(e);
+        this.#messageIdx--;
+        //console.log(this.#messageIdx);
+      }, this.#duration);
+      this.#usedBox.set(e, timeoutId as unknown as number);
+    }
+
+    #setLevel(e: HTMLDivElement, level: string) {
+      e.classList.forEach((c) => {
+        if (c.startsWith("level")) {
+          e.classList.remove(c);
+        }
+      });
+      e.classList.add(`level-${level}`);
+    }
+
+    #showElement(e: HTMLDivElement) {
+      e.classList.replace("hidden", "show");
+    }
+
+    #hideElement(e: HTMLDivElement) {
+      e.classList.replace("show", "hidden");
+    }
+  }
+  customElements.define("resume-notification", ResumeNotification);
+</script>
