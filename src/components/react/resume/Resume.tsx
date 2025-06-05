@@ -1,6 +1,7 @@
 import BasicInfo from "./BasicInfo";
 import Skills from "./Skills";
 import WorkExperience from "./WorkExperience";
+import AdditionalInfo from "./AdditionalInfo";
 import { resumeStore } from "@/libs/resumeStore";
 import { StrictMode, useEffect, useState } from "react";
 
@@ -35,6 +36,7 @@ function Resume() {
       <BasicInfo data={resume.basic} />
       <Skills data={resume.skills} />
       <WorkExperience data={resume.experiences} />
+      <AdditionalInfo data={resume.additionalItems} />
     </>
   );
 }
