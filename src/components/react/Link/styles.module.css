@@ -1,0 +1,7 @@
+.anchor {
+  color: var(--col-primary);
+}
+
+.anchor:hover {
+  opacity: 0.66;
+}
