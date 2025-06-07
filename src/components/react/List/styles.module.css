@@ -1,0 +1,12 @@
+.list {
+  margin: 0;
+  --list-lineheight: var(--font-lineheight-3);
+}
+
+.listItem {
+  line-height: var(--list-lineheight);
+}
+
+.hideListStyle {
+  list-style: none;
+}
