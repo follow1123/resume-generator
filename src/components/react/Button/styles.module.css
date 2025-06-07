@@ -1,0 +1,30 @@
+.textButton {
+  font-size: 0.75rem;
+  width: fit-content;
+  border-radius: var(--radius-1);
+  background-color: var(--col-w-2);
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.textButton:hover {
+  color: var(--col-primary);
+  opacity: 0.66;
+}
+
+.iconButton {
+  cursor: pointer;
+  height: 1em;
+}
+
+.iconButton:hover {
+  opacity: 0.66;
+}
+
+@media print {
+  .textButton,
+  .iconButton {
+    display: none;
+  }
+}
