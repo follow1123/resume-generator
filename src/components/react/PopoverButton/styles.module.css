@@ -1,0 +1,74 @@
+.container {
+  width: fit-content;
+  position: relative;
+}
+
+.select {
+  position: absolute;
+  z-index: 990;
+
+  background-color: var(--col-w-3);
+  box-shadow: var(--shadow-3);
+  border-radius: var(--radius-2);
+  padding: 0.25rem;
+
+  border: none;
+  outline: none;
+  overflow: hidden;
+}
+
+.select option {
+  padding: 0.25rem;
+  border-radius: var(--radius-1);
+}
+
+.select option:checked {
+  background-color: inherit;
+}
+
+.select option:hover {
+  background-color: var(--col-w-1);
+}
+
+.select optgroup {
+  padding: 0.25rem 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+.top-left {
+  bottom: 120%;
+}
+.top-right {
+  right: 0;
+  bottom: 120%;
+}
+.bottom-left {
+  top: 120%;
+}
+.bottom-right {
+  top: 120%;
+  right: 0;
+}
+.left-top {
+  right: 120%;
+  top: 0;
+}
+.left-bottom {
+  right: 120%;
+  bottom: 0;
+}
+.right-top {
+  left: 120%;
+  top: 0;
+}
+.right-bottom {
+  left: 120%;
+  bottom: 0;
+}
