@@ -1,0 +1,46 @@
+.heading {
+  color: var(--col-primary);
+  font-size: var(--font-size-2);
+  font-weight: var(--font-weight-6);
+  margin-bottom: 1rem;
+
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.heading:hover {
+  border-radius: var(--radius-1);
+  background-color: var(--col-w-2);
+  box-shadow: var(--shadow-2);
+}
+
+.headLeft {
+  margin-right: auto;
+}
+
+.buttons {
+  height: 1em;
+  display: none;
+}
+
+.heading:hover > .buttons {
+  display: block;
+}
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+@media print {
+  .heading:hover > .buttons {
+    display: none;
+  }
+
+  .heading:hover {
+    background-color: unset;
+    box-shadow: unset;
+  }
+}

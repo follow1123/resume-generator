@@ -1,0 +1,72 @@
+.project {
+  --label-font-size: var(--font-size-1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.editor {
+  width: 100%;
+}
+
+.label {
+  font-size: var(--font-size-1);
+  font-weight: var(--font-weight-6);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.heading:hover {
+  border-radius: var(--radius-1);
+  background-color: var(--col-w-2);
+  box-shadow: var(--shadow-2);
+}
+
+.headLeft {
+  margin-right: auto;
+}
+
+.itemHeading {
+  margin-bottom: 0.25rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemHeading:hover {
+  border-radius: var(--radius-1);
+  background-color: var(--col-w-2);
+  box-shadow: var(--shadow-2);
+}
+
+.buttons {
+  height: 1em;
+  display: none;
+}
+
+.heading:hover > .buttons,
+.itemHeading:hover > .buttons {
+  display: block;
+}
+
+@media print {
+  .heading:hover > .buttons,
+  .itemHeading:hover > .buttons {
+    display: none;
+  }
+
+  .heading:hover {
+    background-color: unset;
+    box-shadow: unset;
+  }
+
+  .itemHeading:hover {
+    background-color: unset;
+    box-shadow: unset;
+  }
+}
