@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import Favicon from "public/favicon.svg";
+import PrintButton from "@/components/astro/PrintButton.astro";
 ---
 
 <!doctype html>
@@ -18,7 +19,9 @@ import Favicon from "public/favicon.svg";
         <Favicon />
       </div>
       <div class="head-left">Links</div>
-      <div class="head-right">Buttons</div>
+      <div class="head-right">
+        <PrintButton />
+      </div>
     </header>
     <main>Content</main>
   </body>
