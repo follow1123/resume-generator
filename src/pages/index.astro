@@ -4,6 +4,7 @@ import Favicon from "public/favicon.svg";
 import PrintButton from "@/components/astro/PrintButton.astro";
 import ImportButton from "@/components/astro/ImportButton.astro";
 import Notification from "@/components/astro/Notification.astro";
+import Resume from "@/components/react/resume/Resume";
 ---
 
 <!doctype html>
@@ -26,7 +27,9 @@ import Notification from "@/components/astro/Notification.astro";
         <PrintButton />
       </div>
     </header>
-    <main>Content</main>
+    <main>
+      <Resume client:only="react" />
+    </main>
     <Notification />
   </body>
 </html>
