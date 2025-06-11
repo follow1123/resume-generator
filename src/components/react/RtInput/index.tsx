@@ -1,5 +1,5 @@
 import { DateEditor, TextAreaEditor, TextEditor } from "./editor";
-import { TextRenderer } from "./renderer";
+import { MarkdownRenderer, TextRenderer } from "./renderer";
 import type { EditorProps, EditorType, Props } from "./types";
 
 export default function RtInput<T extends EditorType>(props: Props<T>) {
@@ -26,6 +26,10 @@ export default function RtInput<T extends EditorType>(props: Props<T>) {
     switch (rendererType) {
       case "text":
         return <TextRenderer {...props.rendererProps} value={props.value} />;
+      case "markdown":
+        return (
+          <MarkdownRenderer {...props.rendererProps} value={props.value} />
+        );
       default:
         throw new Error(`invalid renderer type: ${props.rendererProps}`);
     }
