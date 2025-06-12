@@ -5,6 +5,7 @@ import PrintButton from "@/components/astro/PrintButton.astro";
 import ImportButton from "@/components/astro/ImportButton.astro";
 import Notification from "@/components/astro/Notification.astro";
 import Resume from "@/components/react/resume/Resume";
+import ResumeNavigator from "@/components/react/resume/ResumeNavigator";
 ---
 
 <!doctype html>
@@ -21,7 +22,9 @@ import Resume from "@/components/react/resume/Resume";
       <div class="site-icon">
         <Favicon />
       </div>
-      <div class="head-left">Links</div>
+      <div class="head-left">
+        <ResumeNavigator client:only="react" />
+      </div>
       <div class="head-right">
         <ImportButton />
         <PrintButton />

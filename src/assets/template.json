@@ -1,0 +1,44 @@
+{
+  "name": "template",
+  "basic": {
+    "name": "xxx",
+    "age": 20,
+    "gender": "男",
+    "phone": "12345678901",
+    "workingYears": 30,
+    "mailbox": "12345@abc.edf"
+  },
+  "skills": [
+    "熟悉 HTML CSS JavaScript",
+    "熟悉 astro 元框架",
+    "熟悉 react 框架",
+    "熟悉 zod 参数校验框架",
+    "熟悉 zustand 状态管理框架",
+    "熟悉 vitest 测试框架"
+  ],
+  "experiences": [
+    {
+      "name": "个人项目",
+      "joiningDate": "2025-05-01",
+      "projects": [
+        {
+          "name": "简历生成器",
+          "desc": "生成简历",
+          "techStacks": ["Astro、React、Zustand、zod、open-props、vitest"],
+          "responsibilities": [
+            "快速生成简历",
+            "支持 Markdown 的**加粗**、[链接]()语法",
+            "使用浏览器原始打印 API，直通打印机，效率提升 **100%**",
+            "开源免费，用户成本立省 **100%**"
+          ],
+          "otherDescriptions": ["**演示地址：**[https://follow1123.github.io/resume-generator/](https://follow1123.github.io/resume-generator/)"]
+        }
+      ]
+    }
+  ],
+  "additionalItems": [
+    "GitHub 首页：[https://github.com/follow1123](https://github.com/follow1123)",
+    "仓库地址：[https://github.com/follow1123/resume-generator](https://github.com/follow1123/resume-generator)"
+  ]
+}
+

@@ -1,0 +1,41 @@
+.links {
+  max-width: 80vw;
+  overflow-x: auto;
+
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.container {
+  position: relative;
+  padding-left: 0.25em;
+  padding-bottom: 0.05em;
+}
+
+.container:hover {
+  border-radius: var(--radius-1);
+  background-color: var(--col-w-2);
+  box-shadow: var(--shadow-2);
+}
+
+.button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: none;
+}
+
+.container:hover .button {
+  display: flex;
+}
+
+.link {
+  cursor: pointer;
+  margin-right: 1.25em;
+}
+
+.currentLink {
+  color: var(--col-primary);
+  text-decoration: underline;
+}
