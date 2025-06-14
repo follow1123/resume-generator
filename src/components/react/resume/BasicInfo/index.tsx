@@ -1,148 +1,146 @@
+import resumeSty from "@/components/react/resume/styles.module.css";
 import styles from "./styles.module.css";
+import type { BasicInfoType } from "@/libs/resumeSchema";
+import { useEffect, useRef, useState } from "react";
+import Section from "../Section";
+import { notify } from "@/libs/notification";
+import { isBlank } from "@/libs/stringUtils";
+import { getInfoList, Info, toBasicInfo } from "./data";
+
+import { TextEditor } from "@/components/react/Editor";
+import { TextRenderer } from "@/components/react/Renderer";
+
+import { classList } from "@/libs/utils";
+import { RemoveButton } from "@/components/react/Button/buttons";
 import PopoverButton from "@/components/react/PopoverButton";
 import type { Option } from "@/components/react/PopoverButton";
-import Section from "../Section";
-import Item from "./Item";
 import addUrl from "@/assets/add.svg?url";
-import List from "@/components/react/List";
+import type { UpdaterProps } from "../types";
 
-import { BasicInfoSchema } from "@/libs/resumeSchema";
-import type { BasicInfoType } from "@/libs/resumeSchema";
-import { useEffect, useState } from "react";
-import { z } from "zod/v4";
-import { notify } from "@/libs/notification";
-import type { InfoItem } from "./types";
+const sectionName = "基本信息";
 
-const basicInfoItems: InfoItem[] = [
-  {
-    order: 0,
-    label: "姓&emsp;&emsp;名",
-    text: "姓名",
-    key: "name",
-    fixed: true,
-  },
-  {
-    order: 1,
-    label: "年&emsp;&emsp;龄",
-    text: "年龄",
-    key: "age",
-    fixed: true,
-    parser: (v) =>
-      z.coerce
-        .number("年龄必须为数字")
-        .pipe(BasicInfoSchema.shape.age)
-        .parse(v),
-    formatter: (v) => `${v}岁`,
-  },
-  {
-    order: 2,
-    label: "性&emsp;&emsp;别",
-    text: "性别",
-    key: "gender",
-    fixed: true,
-  },
-  {
-    order: 3,
-    text: "工作年限",
-    key: "workingYears",
-    parser: (v) =>
-      z.coerce
-        .number("工作年限必须为数字")
-        .pipe(BasicInfoSchema.required().shape.workingYears)
-        .parse(v),
-    formatter: (v) => {
-      const workingYears = v as number;
-      const year = Math.floor(workingYears);
-      if (year < 1) return "半年";
-      let text = `${year}年`;
-      if (Math.ceil(workingYears) > workingYears) text += "半";
-      return text;
-    },
-  },
-  {
-    order: 4,
-    label: "电&emsp;&emsp;话",
-    text: "电话",
-    key: "phone",
-  },
-  {
-    order: 5,
-    label: "邮&emsp;&emsp;箱",
-    text: "邮箱",
-    key: "mailbox",
-    parser: (v) => BasicInfoSchema.required().shape.mailbox.parse(v),
-  },
-];
+export default function BasicInfo({
+  data,
+  onUpdate,
+}: UpdaterProps<BasicInfoType>) {
+  const [render, setRender] = useState(false);
+  const dataRef = useRef<Info[]>(undefined);
+  const [editIdx, setEditIdx] = useState<number | null>(null);
 
-const getInfoItems = (data: BasicInfoType): InfoItem[] => {
-  return basicInfoItems.map((i) => ({
-    ...i,
-    value: data[i.key],
-  }));
-};
-
-export default function BasicInfo({ data }: { data: BasicInfoType }) {
-  const [infoItems, setInfoItems] = useState(getInfoItems(data));
-
+  // 由于列表是定义好的，只有 data 值改变时才会修改列表内的数据
   useEffect(() => {
-    setInfoItems(getInfoItems(data));
+    dataRef.current = getInfoList(data);
+    setRender(!render);
   }, [data]);
 
-  const handleAdd = (key: string) => {
-    if (key === "") {
-      notify({
-        type: "info",
-        text: "没有可以添加的信息",
-      });
-      return;
+  const handleRemove = (info: Info) => {
+    if (info.readonly) {
+      notify(`'${info.name}' 不能为空`, "warn");
+    } else {
+      info.value = undefined;
+      if (dataRef.current) {
+        onUpdate(toBasicInfo(dataRef.current));
+      }
+      setRender(!render);
     }
-    const newData = [...infoItems];
-    const item = basicInfoItems.find((i) => i.key === key);
-    if (!item) {
-      console.error("invalid item key: ", key);
-      return;
-    }
-    newData.splice(item.order, 0, { ...item });
-    setInfoItems(newData);
+    setEditIdx(null);
   };
 
-  const itemList: Option[] = basicInfoItems
-    .filter((l) => !l.fixed && !infoItems.find((i) => i.key === l.key))
-    .map((l) => ({
-      name: l.text,
-      value: l.key,
-    }));
+  const handleConfirm = (info: Info, v: string) => {
+    if (isBlank(v)) {
+      handleRemove(info);
+      return;
+    }
 
-  return (
-    <Section
-      title="基本信息"
-      operation={
-        <PopoverButton
-          position="bottom-right"
-          label="添加"
-          iconUrl={addUrl}
-          list={itemList}
-          onSelected={handleAdd}
-        />
+    if (info.setValue(v)) {
+      if (dataRef.current) {
+        onUpdate(toBasicInfo(dataRef.current));
       }
-    >
-      <List
-        styleVisible={false}
-        className={styles.basicInfo}
-        itemClassName={styles.item}
-        items={infoItems.map((l, i) => ({
-          key: l.key,
-          item: (
-            <Item
-              index={i}
-              list={infoItems}
-              onUpdate={(list) => {
-                setInfoItems(list);
-              }}
+      setRender(!render);
+      setEditIdx(null);
+    }
+  };
+
+  const handleAdd = (key: string) => {
+    const idx = Number(key);
+    if (dataRef.current) {
+      dataRef.current[idx].value = "";
+      setRender(!render);
+      setEditIdx(idx);
+    }
+  };
+
+  // 未使用的数据
+  const unusedInfoList = dataRef.current
+    ? dataRef.current
+        .map((info, i) => {
+          if (info.value !== undefined) return {} as Option;
+          return {
+            name: info.name,
+            value: String(i),
+          };
+        })
+        .filter((o) => o.name)
+    : [];
+
+  const sectionProps =
+    unusedInfoList.length > 0
+      ? {
+          operation: (
+            <PopoverButton
+              position="bottom-right"
+              label="添加"
+              iconUrl={addUrl}
+              list={unusedInfoList}
+              onSelected={handleAdd}
             />
           ),
-        }))}
-      />
+        }
+      : {};
+
+  return (
+    <Section title={sectionName} {...sectionProps}>
+      <ul className={classList(resumeSty.list, styles.list)}>
+        {dataRef.current?.map((d, i) => {
+          if (d.value === undefined) return undefined;
+          const hasEdit = editIdx !== null;
+          const isEdit = editIdx === i;
+
+          const listItemProps = !hasEdit
+            ? {
+                title: "双击修改",
+                onDoubleClick: () => setEditIdx(i),
+                className: classList(
+                  styles.listItem,
+                  resumeSty.toolBarContainer,
+                ),
+              }
+            : {
+                className: styles.listItem,
+              };
+          return (
+            <li key={d.key} {...listItemProps}>
+              <span dangerouslySetInnerHTML={{ __html: d.label }}></span>：
+              {isEdit ? (
+                <TextEditor
+                  className={styles.editor}
+                  value={d.getValue()}
+                  onConfirm={(v) => handleConfirm(d, v)}
+                />
+              ) : (
+                <TextRenderer value={d.getValue(true)} />
+              )}
+              {!hasEdit && (
+                <div className={resumeSty.toolBar}>
+                  {!d.readonly && (
+                    <RemoveButton onClick={() => handleRemove(d)} />
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </Section>
   );
 }

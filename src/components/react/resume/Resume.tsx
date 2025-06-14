@@ -38,8 +38,11 @@ function Resume() {
 
   return (
     <>
-      <BasicInfo data={resume.basic} />
       <Skills data={resume.skills} />
+      <BasicInfo
+        data={resume.basic}
+        onUpdate={(v) => setResumeSection(name, "basic", v)}
+      />
       <WorkExperience data={resume.experiences} />
       <AdditionalInfo data={resume.additionalItems} />
     </>

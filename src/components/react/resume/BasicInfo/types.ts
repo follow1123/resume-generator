@@ -3,13 +3,12 @@ import type { BasicInfoType } from "@/libs/resumeSchema";
 export type InfoKeys = keyof BasicInfoType;
 export type ValueType = Required<BasicInfoType>[InfoKeys];
 
-export interface InfoItem {
-  order: number;
+export interface InfoItemOpts {
   label?: string;
-  text: string;
+  name: string;
   key: InfoKeys;
   value?: ValueType;
-  fixed?: boolean;
-  parser?: (v: string) => Required<BasicInfoType>[InfoKeys];
-  formatter?: (v: Required<BasicInfoType>[InfoKeys]) => string;
+  readonly?: boolean;
+  parser?: (v: string) => ValueType;
+  formatter?: (v: ValueType) => string;
 }

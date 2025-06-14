@@ -1,4 +1,11 @@
-.basicInfo {
+.editor {
+  width: calc(100% - 7rem);
+}
+
+.list {
+  padding-left: 0;
+  list-style: none;
+
   min-height: 5rem;
   width: 100%;
   display: flex;
@@ -6,11 +13,7 @@
   column-gap: 2rem;
 }
 
-.item {
+.listItem {
   min-width: 32%;
   margin: 5px 0;
-}
-
-.input {
-  width: calc(100% - 7rem);
 }
