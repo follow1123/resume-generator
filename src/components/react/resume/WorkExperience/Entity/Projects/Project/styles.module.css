@@ -1,3 +1,7 @@
+.list {
+  padding-left: 2em;
+}
+
 .project {
   --label-font-size: var(--font-size-1);
   display: flex;
@@ -15,9 +19,7 @@
 }
 
 .heading {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .heading:hover {

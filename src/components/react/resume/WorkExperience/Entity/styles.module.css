@@ -19,23 +19,19 @@
   margin-right: auto;
 }
 
-.buttons {
+.toolBar {
   height: 1em;
+
   display: none;
 }
 
-.heading:hover > .buttons {
-  display: block;
-}
-
-.projects {
+.heading:hover > .toolBar {
   display: flex;
-  flex-direction: column;
-  gap: 1em;
+  gap: 0.25rem;
 }
 
 @media print {
-  .heading:hover > .buttons {
+  .heading:hover > .toolBar {
     display: none;
   }
 

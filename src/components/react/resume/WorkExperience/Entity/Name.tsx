@@ -30,7 +30,7 @@ export default function Name({ data, onUpdate }: UpdaterProps<string>) {
     <RtInput
       editorType="text"
       editorProps={{
-        placeholder: itemName,
+        placeholder: "项目名称",
         className: styles.editor,
         onConfirm: handleConfirm,
       }}

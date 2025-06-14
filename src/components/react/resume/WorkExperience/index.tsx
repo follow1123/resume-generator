@@ -1,54 +1,83 @@
 import styles from "./styles.module.css";
 import Section from "../Section";
-import type { ExperiencesType } from "@/libs/resumeSchema";
+import type { EntityType, ExperiencesType } from "@/libs/resumeSchema";
 import Entity from "./Entity";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-import Button from "@/components/react/Button";
-import addUrl from "@/assets/add.svg?url";
+import {
+  AddButton,
+  MoveDownButton,
+  MoveUpButton,
+  RemoveButton,
+} from "@/components/react/Button/buttons";
+import { getTemplateEntity } from "./data";
+import { notify } from "@/libs/notification";
+import { remove, swap } from "@/libs/utils/listUtils";
+import type { UpdaterProps } from "../types";
 
-export default function WorkExperience({ data }: { data?: ExperiencesType }) {
-  const [render, setRender] = useState(false);
-  const dataRef = useRef(data || ([] as ExperiencesType));
+const sectionName = "工作经历";
+const minItemsNum = 1;
 
+export default function WorkExperience({
+  data: initialData,
+  onUpdate,
+}: UpdaterProps<ExperiencesType>) {
+  const [data, setData] = useState(initialData);
   useEffect(() => {
-    dataRef.current = data || ([] as ExperiencesType);
-    setRender(!render);
-  }, [data]);
+    setData(initialData);
+  }, [initialData]);
 
-  const handAddExperience = () => {
-    const newData = [
-      ...dataRef.current,
-      {
-        name: "xxx 公司",
-        joiningDate: "2025-01-01",
-        projects: [
-          {
-            name: "xxx 系统",
-            desc: "xxxxxxxx",
-            responsibilities: ["负责 xxx 模块"],
-          },
-        ],
-      },
-    ];
-    dataRef.current = newData;
-    setRender(!render);
+  const handleRemove = (i: number) => {
+    if (data.length <= minItemsNum) {
+      notify(`至少需要${minItemsNum}条 '${sectionName}' 信息`, "warn");
+    } else {
+      const newData = remove(data, i);
+      onUpdate(newData);
+      setData(newData);
+    }
+  };
+
+  const handleConfirm = (i: number, v: EntityType) => {
+    const newData = [...data];
+    newData[i] = v;
+    onUpdate(newData);
+    setData(newData);
+  };
+
+  const handleSwap = (i: number, o: number) => {
+    const newData = swap(data, i, o);
+    onUpdate(newData);
+    setData(newData);
   };
 
   return (
     <Section
-      title="工作经历"
+      title={sectionName}
       operation={
-        <Button label="添加" iconUrl={addUrl} onClick={handAddExperience} />
+        <AddButton
+          onClick={() => {
+            setData([getTemplateEntity(), ...data]);
+          }}
+        />
       }
     >
       <div className={styles.experiences}>
-        {dataRef.current.map((exp, idx) => (
+        {data.map((exp, i) => (
           <Entity
             key={exp.name}
-            index={idx}
-            list={dataRef.current}
-            onUpdate={(list) => (dataRef.current = list)}
+            data={exp}
+            onUpdate={(v) => handleConfirm(i, v)}
+            operation={
+              <>
+                {i !== 0 && <MoveUpButton onClick={() => handleSwap(i, -1)} />}
+                {i !== data.length - 1 && (
+                  <MoveDownButton onClick={() => handleSwap(i, 1)} />
+                )}
+                {data.length > minItemsNum && (
+                  <RemoveButton onClick={() => handleRemove(i)} />
+                )}
+              </>
+            }
           />
         ))}
       </div>

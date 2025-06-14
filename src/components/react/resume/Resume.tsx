@@ -42,11 +42,14 @@ function Resume() {
         data={resume.basic}
         onUpdate={(v) => setResumeSection(name, "basic", v)}
       />
-      <WorkExperience data={resume.experiences} />
       <AdditionalInfo data={resume.additionalItems} />
       <Skills
         data={resume.skills}
         onUpdate={(v) => setResumeSection(name, "skills", v)}
+      />
+      <WorkExperience
+        data={resume.experiences}
+        onUpdate={(v) => setResumeSection(name, "experiences", v)}
       />
     </>
   );
