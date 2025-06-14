@@ -1,0 +1,48 @@
+.editor {
+  width: 100%;
+}
+
+.list {
+  margin: 0;
+  padding-left: 1rem;
+  line-height: var(--font-lineheight-3);
+}
+
+.toolBarContainer {
+  position: relative;
+}
+
+.toolBarContainer:hover {
+  border-radius: var(--radius-1);
+  background-color: var(--col-w-2);
+  box-shadow: var(--shadow-2);
+}
+
+.toolBar {
+  height: 100%;
+  max-height: 1.5em;
+  background-color: var(--col-w-1);
+  border-radius: inherit;
+
+  display: none;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.toolBarContainer:hover > .toolBar {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+@media print {
+  .toolBarContainer:hover {
+    background-color: unset;
+    box-shadow: unset;
+  }
+  .toolBarContainer:hover .toolBar {
+    display: none;
+  }
+}
