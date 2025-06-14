@@ -1,20 +1,12 @@
+import { classList } from "@/libs/utils";
 import styles from "./styles.module.css";
-
-export interface Props {
-  className?: string;
-  label: string;
-  iconUrl?: string;
-  onClick: () => void;
-}
+import type { Props } from "./types";
 
 export default function Button({ className, label, iconUrl, onClick }: Props) {
-  const classList = [];
-  if (className) classList.push(className);
   if (iconUrl) {
-    classList.push(styles.iconButton);
     return (
       <img
-        className={classList.join(" ")}
+        className={classList(className, styles.iconButton)}
         alt={label}
         title={label}
         src={iconUrl}
@@ -22,9 +14,8 @@ export default function Button({ className, label, iconUrl, onClick }: Props) {
       />
     );
   }
-  classList.push(styles.textButton);
   return (
-    <div className={classList.join(" ")} onClick={onClick}>
+    <div className={classList(styles.textButton, className)} onClick={onClick}>
       {label}
     </div>
   );
