@@ -1,93 +1,99 @@
 import { createStore } from "zustand/vanilla";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 
-import { ResumeSchema } from "./resumeSchema";
-import type { BasicInfoType, ResumeType } from "./resumeSchema";
+import type { ResumeType } from "./resumeSchema";
 
 type ResumeRecord = Record<string, ResumeType>;
 
-type ResumeStoreState = {
+type ResumeStore = {
   context: {
     data: ResumeRecord;
     current?: string;
   };
 };
 
-type ResumeStoreActions = {
-  getResume: (name: string) => ResumeType | undefined;
-  setBasicInfo: (name: string, value: BasicInfoType) => void;
-  importResume: (data: object) => void;
-  setCurrent: (name: string) => void;
-};
-
-type ResumeStore = ResumeStoreState & ResumeStoreActions;
-
-export const resumeStore = createStore<ResumeStore>()(
+const store = createStore<ResumeStore>()(
   subscribeWithSelector(
     persist(
-      (set, get) => ({
+      () => ({
         context: { data: {} },
-        getResume: (name) => {
-          return get().context.data[name];
-        },
-        setBasicInfo: (name, value) => {
-          const state = get();
-          const resume = state.getResume(name);
-          if (!resume) {
-            console.warn("no resume name: ", name);
-            return;
-          }
-          set({
-            context: {
-              current: state.context.current,
-              data: {
-                ...state.context.data,
-                [name]: {
-                  ...state.context.data[name],
-                  basic: value,
-                },
-              },
-            },
-          });
-        },
-        importResume: (data) => {
-          const state = get();
-          if (Array.isArray(data)) {
-            // TODO
-            //const resumeArr = data.map((d) => ResumeSchema.parse(d));
-          } else {
-            const resume = ResumeSchema.parse(data);
-            if (state.getResume(resume.name)) {
-              throw new Error(`简历名称重复: ${resume.name}`);
-            }
-
-            set({
-              context: {
-                current: state.context.current,
-                data: {
-                  ...state.context.data,
-                  [resume.name]: resume,
-                },
-              },
-            });
-          }
-        },
-        setCurrent: (name) => {
-          const state = get();
-          const resume = state.getResume(name);
-          if (!resume) {
-            console.error("no resume named:", name);
-            return;
-          }
-          if (state.context.current === name) {
-            return;
-          }
-          set({ context: { ...state.context, current: name } });
-        },
       }),
-      {
-        name: "resumes",
-      },
+      { name: "resumes" },
     ),
   ),
 );
+
+export const getResume = (name: string): ResumeType | undefined => {
+  return store.getState().context.data[name];
+};
+
+export const getResumeList = () => {
+  return Object.values(store.getState().context.data);
+};
+
+export const getResumeNames = () => {
+  return [...Object.keys(store.getState().context.data)];
+};
+
+export const isDuplicate = (name: string): boolean => {
+  return getResume(name) !== undefined;
+};
+
+export const setCurrentResume = (name: string | undefined) => {
+  const state = store.getState();
+  const currentName = name || undefined;
+  store.setState({ context: { ...state.context, current: currentName } });
+};
+
+export const getCurrentResumeName = () => {
+  return store.getState().context.current;
+};
+
+export const addResume = (resume: ResumeType | ResumeType[]) => {
+  const state = store.getState();
+  const resumes = Array.isArray(resume) ? resume : [resume];
+  const newData = { ...state.context.data };
+  resumes.forEach((r) => (newData[r.name] = r));
+  const currentName = resumes[resumes.length - 1].name;
+  store.setState({ context: { current: currentName, data: newData } });
+};
+
+export const removeResume = (name: string) => {
+  const state = store.getState();
+
+  let currentName = state.context.current;
+  if (name === currentName) {
+    const resumes = Object.values(state.context.data);
+    const idx = resumes.indexOf(state.context.data[name]);
+    currentName = resumes[idx - 1]
+      ? resumes[idx - 1].name
+      : resumes[idx + 1]
+        ? resumes[idx + 1].name
+        : undefined;
+  }
+
+  const { [name]: _, ...rest } = state.context.data;
+  store.setState({ context: { current: currentName, data: rest } });
+};
+
+export const subscribeResume = store.subscribe;
+
+export const setResumeSection = (
+  name: string,
+  sectionName: string,
+  value: ResumeType[keyof ResumeType],
+) => {
+  const state = store.getState();
+  store.setState({
+    context: {
+      current: state.context.current,
+      data: {
+        ...state.context.data,
+        [name]: {
+          ...state.context.data[name],
+          [sectionName]: value,
+        },
+      },
+    },
+  });
+};
