@@ -1,0 +1,305 @@
+---
+import ListIcon from "@/assets/list.svg";
+---
+
+<menu-list menu-list>
+  <div class="icon-button" menu-list>
+    <ListIcon class="icon" menu-list />
+    <div menu-list class="icon-cover" title="操作菜单"></div>
+  </div>
+
+  <select menu-list class="menu" size="4">
+    <option menu-list value="open">打开</option>
+    <option menu-list value="download">下载</option>
+    <option menu-list value="import-json">从 JSON 导入</option>
+    <option menu-list value="export-clipboard">导出到剪贴板</option>
+  </select>
+  <input type="file" class="file-selector" accept=".json" />
+  <a class="downloader"></a>
+</menu-list>
+
+<style>
+  menu-list {
+    height: var(--size-4);
+    width: var(--size-4);
+
+    position: relative;
+  }
+
+  .icon-button {
+    height: 100%;
+    width: 100%;
+
+    position: relative;
+  }
+
+  .icon-button:hover {
+    opacity: 0.66;
+  }
+
+  .icon-cover {
+    height: inherit;
+    width: inherit;
+
+    cursor: pointer;
+    user-select: none;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+  }
+
+  .icon {
+    width: inherit;
+    height: inherit;
+  }
+
+  .file-selector,
+  .downloader {
+    display: none;
+  }
+
+  .menu {
+    padding: 0.25rem 0.05rem;
+
+    background-color: var(--col-w-3);
+    box-shadow: var(--shadow-4);
+    border-radius: var(--radius-2);
+
+    overflow: hidden;
+    outline: none;
+
+    display: none;
+    position: absolute;
+    z-index: 990;
+    right: 0;
+    top: 100%;
+  }
+
+  option {
+    cursor: pointer;
+    user-select: none;
+
+    white-space: nowrap;
+    padding: 0.15rem 0.25rem;
+
+    border-radius: var(--radius-1);
+  }
+
+  option:hover {
+    background-color: var(--col-w-1);
+  }
+
+  .show {
+    display: unset;
+  }
+</style>
+
+<script>
+  import { notify } from "@/libs/notification";
+  import { ResumeSchema } from "@/libs/resumeSchema";
+  import { addResume, getResume, getResumeNames } from "@/libs/resumeStore";
+  import { randomName } from "@/libs/utils";
+  import { zodPrettifyError } from "@/libs/utils";
+
+  class MenuList extends HTMLElement {
+    menu: HTMLSelectElement;
+    fileSelector: HTMLInputElement;
+    downloader: HTMLAnchorElement;
+    constructor() {
+      super();
+      // 点击其他位置关闭菜单
+      document.addEventListener("click", (e) => {
+        const ele = e.target as HTMLElement;
+        if (!ele.hasAttribute("menu-list")) {
+          if (this.menu.classList.contains("show")) {
+            this.menu.classList.remove("show");
+          }
+        }
+      });
+
+      this.menu = this.querySelector(".menu") as HTMLSelectElement;
+      this.downloader = this.querySelector(".downloader") as HTMLAnchorElement;
+      this.fileSelector = this.querySelector(
+        ".file-selector",
+      ) as HTMLInputElement;
+
+      // 菜单操作
+      this.menu.addEventListener("change", () => {
+        const action = this.menu.value;
+        if (!action) return;
+        switch (action) {
+          case "open":
+            this.handleOpen();
+            break;
+          case "download":
+            this.handleDownload();
+            break;
+          case "import-json":
+            this.handleImportJson();
+            break;
+          case "export-clipboard":
+            this.handleExportClipobard();
+            break;
+        }
+        this.menu.value = "";
+        this.menuSetVisible(false);
+      });
+
+      // 菜单开启关闭
+      this.querySelector(".icon-button")?.addEventListener(
+        "click",
+        this.menuToggleVisible.bind(this),
+      );
+
+      // 选择文件操作
+      this.fileSelector.addEventListener(
+        "change",
+        this.handleLoadData.bind(this),
+      );
+    }
+
+    menuIsVisible(): boolean {
+      return this.menu.classList.contains("show");
+    }
+
+    menuSetVisible(visible: boolean) {
+      if (visible) {
+        this.menu.classList.add("show");
+      } else {
+        this.menu.classList.remove("show");
+      }
+    }
+
+    menuToggleVisible() {
+      this.menuSetVisible(!this.menuIsVisible());
+    }
+
+    handleLoadData() {
+      const fileList = this.fileSelector.files;
+      if (!fileList || fileList.length === 0) {
+        console.log("未选择文件");
+        return;
+      }
+      const file = fileList[0];
+      if (!file.type.endsWith("json")) {
+        notify(`不支持的文件类型`, "warn");
+        return;
+      }
+      // 读取文件
+      const reader = new FileReader();
+      reader.onload = () => {
+        const content = reader.result;
+        if (content === null) {
+          console.log("没有内容");
+          return;
+        }
+        this.importResume(content.toString());
+      };
+
+      reader.onerror = () => {
+        notify("打开文件错误", "error");
+      };
+      reader.readAsText(file);
+
+      // 清空选项
+      this.fileSelector.value = "";
+      this.menuSetVisible(false);
+    }
+
+    // 打开
+    handleOpen() {
+      this.fileSelector.click();
+    }
+
+    // 下载
+    handleDownload() {
+      const data = this.selectResume();
+      if (!data) return;
+      let url: string | undefined;
+      try {
+        const resumeName = `${randomName("resumes")}.json`;
+        url = URL.createObjectURL(
+          new Blob([data], { type: "application/json" }),
+        );
+        this.downloader.href = url;
+        this.downloader.download = resumeName;
+        this.downloader.click();
+      } catch (e) {
+        notify("下载错误");
+        console.error(e);
+      } finally {
+        if (url) {
+          URL.revokeObjectURL(url);
+        }
+      }
+    }
+
+    // 导入 JSON
+    handleImportJson() {
+      const json = prompt("输入 JSON 数据");
+      if (json === null) return;
+      if (json.trim().length === 0) {
+        notify("未输入数据");
+        return;
+      }
+      this.importResume(json);
+    }
+
+    // 导出到剪贴板
+    handleExportClipobard() {
+      const data = this.selectResume();
+      if (!data) return;
+      navigator.clipboard
+        .writeText(data)
+        .then(() => notify("导出成功"))
+        .catch(() => notify("导出失败", "error"));
+    }
+
+    importResume(jsonStr: string) {
+      try {
+        const jsonData = JSON.parse(jsonStr);
+
+        const resumeData = Array.isArray(jsonData)
+          ? jsonData.map((j) => ResumeSchema.parse(j))
+          : [ResumeSchema.parse(jsonData)];
+        const existsResume = resumeData
+          .map((r) => r.name)
+          .filter((n) => getResume(n));
+        if (existsResume.length > 0) {
+          notify("简历名称重复");
+          return;
+        }
+
+        addResume(resumeData);
+      } catch (e) {
+        const zodErrorStr = zodPrettifyError(e);
+        if (zodErrorStr) {
+          notify(zodErrorStr, "error");
+        }
+        console.error(e);
+      }
+    }
+
+    selectResume(): string | undefined {
+      const resumeNames = getResumeNames();
+      const result = prompt(
+        "选择的简历（删除取消选择）",
+        resumeNames.join(" "),
+      );
+      if (result === null) return;
+      const resumeList = result
+        .split(" ")
+        .map((n) => getResume(n))
+        .filter((n) => n);
+      if (resumeList.length === 0) {
+        notify("未选择简历");
+        return;
+      }
+      return JSON.stringify(resumeList);
+    }
+  }
+
+  customElements.define("menu-list", MenuList);
+</script>
