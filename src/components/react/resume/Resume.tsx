@@ -2,33 +2,38 @@ import BasicInfo from "./BasicInfo";
 import Skills from "./Skills";
 import WorkExperience from "./WorkExperience";
 import AdditionalInfo from "./AdditionalInfo";
-import { resumeStore } from "@/libs/resumeStore";
+import {
+  getCurrentResumeName,
+  getResume,
+  setResumeSection,
+  subscribeResume,
+} from "@/libs/resumeStore";
 import { StrictMode, useEffect, useState } from "react";
 
 function ResumeNotFound({ message }: { message: string }) {
-  return <p style={{ color: "red" }}>{message}</p>;
+  return <p>{message}</p>;
 }
 
 function Resume() {
-  const [name, setName] = useState(resumeStore.getState().context.current);
+  const [name, setName] = useState(getCurrentResumeName());
 
   useEffect(() => {
-    return resumeStore.subscribe(
+    return subscribeResume(
       (state) => state.context.current,
       (current) => {
-        console.log("switching resume: ", current);
-
         setName(current);
       },
     );
   }, []);
 
   if (!name) {
-    return <ResumeNotFound message="没有选中的简历" />;
+    return (
+      <ResumeNotFound message="没有简历，添加（左上角）或导入（右上角）简历" />
+    );
   }
-  const resume = resumeStore.getState().getResume(name);
+  const resume = getResume(name);
   if (!resume) {
-    return <ResumeNotFound message={`没有名称为：'${name} 的简历'`} />;
+    return <ResumeNotFound message={`没有名称为：'${name}' 的简历`} />;
   }
 
   return (
