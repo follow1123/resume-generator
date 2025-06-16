@@ -1,0 +1,43 @@
+---
+import GitHubSvg from "@/assets/github.svg";
+---
+
+<div class="github-button">
+  <GitHubSvg class="icon" />
+  <a
+    href="https://github.com/follow1123/resume-generator"
+    target="_blank"
+    class="icon-cover"
+    title="仓库地址"></a>
+</div>
+
+<style>
+  .github-button {
+    height: var(--size-4);
+    width: var(--size-4);
+
+    position: relative;
+  }
+
+  .github-button:hover {
+    opacity: 0.66;
+  }
+
+  .icon-cover {
+    height: inherit;
+    width: inherit;
+
+    cursor: pointer;
+    user-select: none;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+  }
+
+  .icon {
+    width: inherit;
+    height: inherit;
+  }
+</style>
