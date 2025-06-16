@@ -8,11 +8,12 @@ import ListIcon from "@/assets/list.svg";
     <div menu-list class="icon-cover" title="操作菜单"></div>
   </div>
 
-  <select menu-list class="menu" size="4">
+  <select menu-list class="menu" size="5">
     <option menu-list value="open">打开</option>
     <option menu-list value="download">下载</option>
     <option menu-list value="import-json">从 JSON 导入</option>
     <option menu-list value="export-clipboard">导出到剪贴板</option>
+    <option menu-list value="print">打印</option>
   </select>
   <input type="file" class="file-selector" accept=".json" />
   <a class="downloader"></a>
@@ -141,6 +142,9 @@ import ListIcon from "@/assets/list.svg";
             break;
           case "export-clipboard":
             this.handleExportClipobard();
+            break;
+          case "print":
+            window.print();
             break;
         }
         this.menu.value = "";
